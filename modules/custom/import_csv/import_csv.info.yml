@@ -1,0 +1,6 @@
+name: Import CSV
+description: Import CSV module
+package: CustomModules
+
+type: module
+core_version_requirement: ^8 || ^9 || ^10

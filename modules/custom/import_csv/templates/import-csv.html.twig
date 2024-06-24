@@ -1,0 +1,270 @@
+<form  action=""  id="UploadMediaForm" name="UploadMediaForm" method="POST" enctype="multipart/form-data"> 
+
+	<div >
+	  <a style="color: #000; padding: 10px; border: solid 1px #000; cursor: pointer;" class="pure-material-button-contained" onclick="$('#SelectFile').click();">
+	           Select File
+	  </a> </br></br>
+	 <text style="color:#3bc8e7;"> File Name:</text>  <text id="FileNameUpadteText" style="color:#000">...</text>
+	 <input id="SelectFile" name="SelectFile" type="file" accept=".csv" style="display:none;" >
+	</div>
+
+	<br>
+
+	<text id="UploadProgressPercentMain" style="color:#000;display:none;">
+	    Working... <b><text id="UploadProgressPercent"></text>%</b>
+	</text>
+
+    <div id="loadingUploadFile" style="border-radius:5px;overflow:hidden;height:80px;width:80px;margin:0 auto;display:none;">
+       Working...All done, saving to DB...
+	</div> 
+
+    <div id="UploadFileResponseAlt" style="padding:2px;background-color:#fff;border-radius:5px;color:#000;margin:0 auto;width:600px;text-align:center;display:none;">
+        ...
+	</div>
+
+    <div id="UploadFileResponse" style="padding:2px;background-color:#fff;border-radius:5px;color:#000;margin:0 auto;width:600px;text-align:center;display:none;">
+        ...
+	</div>
+
+
+	<a id="BtnUploadFile" style="color: #fff; margin-top: 5px; background: #000; padding: 10px; cursor: pointer;display:none;margin-top:5px;" class="pure-material-button-contained" onclick="SubmitFormActionMain();">
+	 Generate Draft
+	</a> 
+
+</form>
+
+  <form  action=""  id="UploadDraftForm" name="UploadDraftForm" method="POST" enctype="multipart/form-data"> 
+    <input type="hidden" id="UploadDraftContent" name="UploadDraftContent" value="0" >
+     <input type="hidden" id="csvFilePath" name="csvFilePath" value="0" >
+  </form>
+
+ <form  action=""  id="DeleteDraftForm" name="DeleteDraftForm" method="POST" enctype="multipart/form-data"> 
+     <input type="hidden" id="DeleteDraftcsvFilePath" name="DeleteDraftcsvFilePath" value="0" >
+  </form>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+
+$(document).ready(function() {
+    // jQuery document ready function
+    document.getElementById('SelectFile').onchange = function () {
+	  $('#FileNameUpadteText').html(document.getElementById('SelectFile').value);
+      $('#BtnUploadFile').show();
+      $("#UploadFileResponse").hide();
+	}; 
+});
+
+		function SubmitFormActionMain(){     
+		   $("#UploadFileResponse").show();
+		   $("#UploadFileResponse").html('Working...');    
+		   $("#UploadProgressPercentMain").show();
+		   $("#BtnUploadFile").hide();
+		   
+
+		  var UploadMediaURL = "import-process";
+
+		   var myform = document.getElementById("UploadMediaForm");
+		    var fd = new FormData(myform );
+		    $.ajax({
+		            xhr: function() {
+		                var xhr = new window.XMLHttpRequest();
+		        
+		                // Upload progress
+		                xhr.upload.addEventListener("progress", function(evt){
+		                    if (evt.lengthComputable) {
+		                        var percentComplete = evt.loaded / evt.total;
+		                        //Do something with upload progress
+		                       percentComplete=percentComplete*100;
+		                       percentComplete =Math.round(percentComplete);                                    
+		                        $('#UploadProgressPercent').html(percentComplete);
+
+
+								if(percentComplete=='100'){
+									$('#UploadProgressPercent').html('Status: file send to server...');
+								}
+
+		                    }
+		               }, false);
+		               
+		               // Download progress
+		               xhr.addEventListener("progress", function(evt){
+		                   if (evt.lengthComputable) {
+		                       var percentComplete = evt.loaded / evt.total;
+		                       // Do something with download progress
+		                       percentComplete=percentComplete*100;
+		                       percentComplete =Math.round(percentComplete);
+		                       $('#UploadProgressPercent').html(percentComplete);
+		                   }
+		               }, false);
+		               
+		               return xhr;
+		            },                    
+		        url: UploadMediaURL,
+		        data: fd,
+		        cache: false,
+		        processData: false,
+		        contentType: false,
+		        type: 'POST',
+		        success: function (data) {
+		            // do something with the result
+		            
+		            $("#UploadProgressPercentMain").hide();
+		            
+		            $("#UploadFileResponse").html(data);
+
+		             var UploadDraftContentSub = $("#UploadDraftContentSub").val();
+		             $("#UploadDraftContent").val(UploadDraftContentSub);
+                     
+		             var csvFilePathSub = $("#csvFilePathSub").val();
+		             $("#csvFilePath").val(csvFilePathSub);
+		             $("#DeleteDraftcsvFilePath").val(csvFilePathSub);
+
+		            //clear attached file
+			        $("#SelectFile").val("");
+			        $("#FileNameUpadteText").html("");
+		 
+		        }
+
+		    });    
+		}
+
+
+		function SaveProcess(){     
+
+		   $("#UploadFileResponseAlt").show();
+		   $("#UploadFileResponseAlt").html('Working...saving data...');    
+		   $("#UploadProgressPercentMain").show();
+		   $("#BtnUploadFile").hide();
+		   
+
+		  var UploadMediaURL = "import-process-save";
+
+		   var myform = document.getElementById("UploadDraftForm");
+		    var fd = new FormData(myform );
+		    $.ajax({
+		            xhr: function() {
+		                var xhr = new window.XMLHttpRequest();
+		        
+		                // Upload progress
+		                xhr.upload.addEventListener("progress", function(evt){
+		                    if (evt.lengthComputable) {
+		                        var percentComplete = evt.loaded / evt.total;
+		                        //Do something with upload progress
+		                       percentComplete=percentComplete*100;
+		                       percentComplete =Math.round(percentComplete);                                    
+		                        $('#UploadProgressPercent').html(percentComplete);
+
+
+								if(percentComplete=='100'){
+									$('#UploadProgressPercent').html('Status: saving data...');
+								}
+
+		                    }
+		               }, false);
+		               
+		               // Download progress
+		               xhr.addEventListener("progress", function(evt){
+		                   if (evt.lengthComputable) {
+		                       var percentComplete = evt.loaded / evt.total;
+		                       // Do something with download progress
+		                       percentComplete=percentComplete*100;
+		                       percentComplete =Math.round(percentComplete);
+		                       $('#UploadProgressPercent').html(percentComplete);
+		                   }
+		               }, false);
+		               
+		               return xhr;
+		            },                    
+		        url: UploadMediaURL,
+		        data: fd,
+		        cache: false,
+		        processData: false,
+		        contentType: false,
+		        type: 'POST',
+		        success: function (data) {
+		            // do something with the result
+		            
+		            $("#UploadProgressPercentMain").hide();
+		            $("#UploadFileResponseAlt").hide();
+		            $("#UploadFileResponse").html(data);
+
+		            //clear attached file
+			        $("#SelectFile").val("");
+			        $("#FileNameUpadteText").html("");
+		 
+		        }
+
+		    });    
+		}
+
+		function DeleteDraft(){     
+
+		   $("#UploadFileResponseAlt").show();
+		   $("#UploadFileResponseAlt").html('Working...Deleting draft and csv file...');    
+		   $("#UploadProgressPercentMain").show();
+		   $("#BtnUploadFile").hide();
+		   
+
+		  var UploadMediaURL = "import-process-delete";
+
+		   var myform = document.getElementById("DeleteDraftForm");
+		    var fd = new FormData(myform );
+		    $.ajax({
+		            xhr: function() {
+		                var xhr = new window.XMLHttpRequest();
+		        
+		                // Upload progress
+		                xhr.upload.addEventListener("progress", function(evt){
+		                    if (evt.lengthComputable) {
+		                        var percentComplete = evt.loaded / evt.total;
+		                        //Do something with upload progress
+		                       percentComplete=percentComplete*100;
+		                       percentComplete =Math.round(percentComplete);                                    
+		                        $('#UploadProgressPercent').html(percentComplete);
+
+
+								if(percentComplete=='100'){
+									$('#UploadProgressPercent').html('Status: saving data...');
+								}
+
+		                    }
+		               }, false);
+		               
+		               // Download progress
+		               xhr.addEventListener("progress", function(evt){
+		                   if (evt.lengthComputable) {
+		                       var percentComplete = evt.loaded / evt.total;
+		                       // Do something with download progress
+		                       percentComplete=percentComplete*100;
+		                       percentComplete =Math.round(percentComplete);
+		                       $('#UploadProgressPercent').html(percentComplete);
+		                   }
+		               }, false);
+		               
+		               return xhr;
+		            },                    
+		        url: UploadMediaURL,
+		        data: fd,
+		        cache: false,
+		        processData: false,
+		        contentType: false,
+		        type: 'POST',
+		        success: function (data) {
+		            // do something with the result
+		            
+		            $("#UploadProgressPercentMain").hide();
+		            $("#UploadFileResponseAlt").hide();
+		            $("#UploadFileResponse").html(data);
+
+		            //clear attached file
+			        $("#SelectFile").val("");
+			        $("#FileNameUpadteText").html("");
+		 
+		        }
+
+		    });    
+		}
+
+</script>

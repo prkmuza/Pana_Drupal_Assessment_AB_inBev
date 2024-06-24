@@ -1,0 +1,31 @@
+import_csv.listing:
+  path: '/import-csv'
+  defaults:
+    _controller: '\Drupal\import_csv\Controller\ImportCSV::view'
+    _title: 'Import CSV Home'
+  requirements:
+    _permission: 'access content'
+
+import_csv.post:
+  path: '/import-process'
+  defaults:
+    _controller: '\Drupal\import_csv\Controller\ImportCSV::process'
+    _title: 'Import CSV Process'
+  requirements:
+    _permission: 'access content'
+
+import_csv.save:
+  path: '/import-process-save'
+  defaults:
+    _controller: '\Drupal\import_csv\Controller\ImportCSV::saveprocess'
+    _title: 'Import CSV Process and save'
+  requirements:
+    _permission: 'access content'
+
+import_csv.delete:
+  path: '/import-process-delete'
+  defaults:
+    _controller: '\Drupal\import_csv\Controller\ImportCSV::deletedraft'
+    _title: 'Import CSV Process Delete Draft'
+  requirements:
+    _permission: 'access content'
